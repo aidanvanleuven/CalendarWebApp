@@ -1,0 +1,13 @@
+{
+  "name": "calendar-app",
+  "version": "0.0.2",
+  "description": "Calendar application for J&B Drafting",
+  "main": "server.js",
+  "author": "Aidan Vanleuven",
+  "license": "MIT",
+  "dependencies": {
+    "compression": "^1.6.2",
+    "express": "^4.14.0",
+    "materialize-css": "^0.97.7"
+  }
+}
