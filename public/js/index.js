@@ -1,103 +1,156 @@
-//Global variables
-var g_Month;						//Current month
-var g_DaysInMonth;					//Number of days in current month
-var g_CurrentDay;					//Current day of the month
-var g_CurrentYear;					//Current year
-var dateObj = new Date();			//Global date object
-var counter;						//Counter for dealing with months that start on a Saturday or Sunday
+//Global variables -- based on current date
+var g_Month = moment().add(3,"month").month();								//Current month; zero based
+var g_DaysInMonth = moment().add(3,"month").daysInMonth();					//Number of days in current month
+var g_CurrentDay = moment().date();							//Current day of the month
+var g_CurrentYear = moment().year();						//Current year
+
+
+
+
+//Get number of days in any month; Zero based
+function getDaysInMonth(month,year){
+	if (month === undefined){
+		month = g_Month;
+	}
+	if (year === undefined){
+		year = g_CurrentYear;
+	}
+	var a = month+1;
+	var b = year;
+	a.toString();
+	b.toString();
+	var parse = a+"-"+b;
+	return moment(parse,"M-YYYY").daysInMonth();
+}
+
+//Get the day of the week for any day and month; day is one based, month is zero based
+function getDayOfWeek(day, month){
+	if (day === undefined){
+		day = g_CurrentDay;
+	}
+	if (month === undefined){
+		month = g_Month;
+	}
+
+	var a = day;
+	var b = month+1;
+	a.toString();
+	b.toString();
+	var parse = a+"-"+b;
+	return moment(parse, "D-M").day();
+}
+
 //On page load...
 $(function(){
+	var monthName = [];
 
 	//Change card height if fullscreen
 	if (window.innerHeight == screen.height) {
-		$(".card").css("height", "230");
+		$(".card").css("height", "235");
 	}
 
-	//Initialize materialize dropdowns for modal
-	$('select').material_select();
-
-//Show current month as the header
-
+	//Show current month as the header and set month name array
 	$(".brand-logo").text(function(){
-		var d = new Date();
-		var month = [];
-		month[0] = "January";
-		month[1] = "February";
-		month[2] = "March";
-		month[3] = "April";
-		month[4] = "May";
-		month[5] = "June";
-		month[6] = "July";
-		month[7] = "August";
-		month[8] = "September";
-		month[9] = "October";
-		month[10] = "November";
-		month[11] = "December";
-		var n = month[dateObj.getMonth()];
-
-		//Set the current month... 1 based, ex. 8 = August
-		g_Month = dateObj.getMonth() + 1;
+		monthName[0] = "January";
+		monthName[1] = "February";
+		monthName[2] = "March";
+		monthName[3] = "April";
+		monthName[4] = "May";
+		monthName[5] = "June";
+		monthName[6] = "July";
+		monthName[7] = "August";
+		monthName[8] = "September";
+		monthName[9] = "October";
+		monthName[10] = "November";
+		monthName[11] = "December";
+		var n = monthName[g_Month];
 
 		return n;
 	});
 
-//Create cards for each day
-
-	//Get number of days in any month... based on one, ex. (8,2016) returns 31 for August
-	function daysInMonth(month,year) {
-    	return new Date(year, month, 0).getDate();
+	//Populate modal month dropdown
+	var i;
+	for (i = 0; i < monthName.length; i++) {
+		$("#month-dropdown").append("<option value='" + i + "'>" + monthName[i] + "</option>");
 	}
+	$("#month-dropdown").val(g_Month);
 
-	//Get the day of the week for any day of the current month and year
-	function getDayOfWeek(day) {
-		var d = new Date(g_CurrentYear, g_Month - 1, day);
-		return d.getDay();
-	}
 
-	//Set the current year
-	g_CurrentYear = dateObj.getFullYear();
-	//Set the current day
-	g_CurrentDay = dateObj.getUTCDate();
-	//Set the # of days in the current month
-	g_DaysInMonth = daysInMonth(g_Month, g_CurrentYear);
+	//Populate modal day dropdown
+	function populateDayDropdown(month){
+		$("#day-dropdown").empty();
 
-	console.log(getDayOfWeek(1));
-	//Removes cards for days in the previous month 
-	$(".card-title").each(function(index){
-		if (getDayOfWeek(1) === 6) {
-			if (getDayOfWeek(1) >= index){
-				$(this).parent().parent().remove();
+		if (month === undefined){
+			month = g_Month;
+		}
+
+		var i;
+		var numberOfDays = getDaysInMonth(month);
+
+		for(i = 0; i < numberOfDays; i++){
+			var j = i+1;
+			if (getDayOfWeek(j) !== 0 && getDayOfWeek(j, month) !== 6){
+				$("#day-dropdown").append("<option value='" + i + "'>" + j + "</option>");
 			}
 		}
-
-		if (getDayOfWeek(1) > index+1){
-			$(this).parent().parent().remove();
-		}
-	});
-
-	$(".card-title").each(function(index){
-		//Account for days that start on a Sunday or Saturday
-		if (getDayOfWeek(1) === 6){
-			counter=3;
-		} else if (getDayOfWeek(1) === 0){
-			counter=2;
+		if (month == g_Month){
+			$("#day-dropdown").val(g_CurrentDay-1);
 		} else {
-			counter=1;
+			$("#day-dropdown").val(0);
 		}
-		//Add date number to every card
-		$(this).text(index+counter);
 
-		//Hides extra days
-		if (index+counter > g_DaysInMonth) {
-			$(this).parent().parent().addClass("hide");
-		}
-		//Add "Today" badge to current day
-		if (index+counter == g_CurrentDay){
-			$(this).append("<span class='badge'><u>Today</u>");
-		}
-		console.log(g_DaysInMonth);
+		$('select').material_select();
+	}
+	populateDayDropdown();
+
+	//Change days when a month is selected
+	$("#month-dropdown").change(function(){
+		populateDayDropdown(parseInt($("#month-dropdown").val()));
 	});
-	console.log(counter);
+
+	$('select').material_select();
+	
+	////Create cards for each day... so fucking hacky... definitely not the right way to do this
+	///jQuery madness
+	//Beware of dragons
+	numberOfDays = getDaysInMonth();
+
+	var weekdaysArr = [];
+	var weekdaysInMonth;
+	for (i = 0; i < numberOfDays; i++){
+		if (getDayOfWeek(i) !== 0 && getDayOfWeek(i) !== 6){
+			weekdaysArr.push(i);
+		}
+	}
+	weekdaysInMonth = weekdaysArr.length;
+
+	var j,k;
+	var count = 0;
+
+	for (i = 0; i < 5; i++){
+		$(".row-template").clone().appendTo(".page-wrapper").removeClass("hide row-template").addClass("new-row");
+
+		for (j = 0; j < 5; j++){
+			
+			if (j === 0){
+				$(".column-template").clone().appendTo(".new-row:eq("+i+")").removeClass("hide column-template").addClass("new-column");
+			} else {
+				$(".column-template").clone().appendTo(".new-row:eq("+i+")").removeClass("hide offset-s1 column-template").addClass("new-column");
+			}
+			
+		}
+		for (k = 0; k < 5; k++){
+		
+			if ($(".new-card").length < weekdaysInMonth) {
+				$(".card-template").clone().appendTo(".new-column:eq("+count+")").removeClass("hide card-template").addClass("new-card");
+				count++;
+			}
+			
+			console.log(count);
+			//console.log(getDayOfWeek(count));
+		}
+
+	}
 
 });
 
