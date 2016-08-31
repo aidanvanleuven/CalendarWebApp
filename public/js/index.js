@@ -1,9 +1,10 @@
 //Global variables -- based on current date
-var g_Month = moment().add(-1,"month").month();								//Current month; zero based
-var g_DaysInMonth = moment().add(-1,"month").daysInMonth();					//Number of days in current month
+var g_Month = moment().month();								//Current month; zero based
+var g_DaysInMonth = moment().daysInMonth();					//Number of days in current month
 var g_CurrentDay = moment().date();							//Current day of the month
 var g_CurrentYear = moment().year();						//Current year
-
+var weekdaysArr = [];
+var weekdaysInMonth;
 
 
 
@@ -22,6 +23,8 @@ function getDaysInMonth(month,year){
 	var parse = a+"-"+b;
 	return moment(parse,"M-YYYY").daysInMonth();
 }
+
+var numberOfDays = getDaysInMonth();
 
 //Get the day of the week for any day and month; day is one based, month is zero based
 function getDayOfWeek(day, month){
@@ -50,30 +53,36 @@ $(function(){
 	}
 
 	//Show current month as the header and set month name array
-	$(".brand-logo").text(function(){
-		monthName[0] = "January";
-		monthName[1] = "February";
-		monthName[2] = "March";
-		monthName[3] = "April";
-		monthName[4] = "May";
-		monthName[5] = "June";
-		monthName[6] = "July";
-		monthName[7] = "August";
-		monthName[8] = "September";
-		monthName[9] = "October";
-		monthName[10] = "November";
-		monthName[11] = "December";
-		var n = monthName[g_Month];
+	function monthAsHeader(){
+		$(".brand-logo").text(function(){
+			monthName[0] = "January";
+			monthName[1] = "February";
+			monthName[2] = "March";
+			monthName[3] = "April";
+			monthName[4] = "May";
+			monthName[5] = "June";
+			monthName[6] = "July";
+			monthName[7] = "August";
+			monthName[8] = "September";
+			monthName[9] = "October";
+			monthName[10] = "November";
+			monthName[11] = "December";
+			var n = monthName[g_Month];
 
-		return n;
-	});
+			return n;
+		});
+	}	
+	monthAsHeader();
 
 	//Populate modal month dropdown
-	var i;
-	for (i = 0; i < monthName.length; i++) {
-		$("#month-dropdown").append("<option value='" + i + "'>" + monthName[i] + "</option>");
+	function populateModal(){
+		var i;
+		for (i = 0; i < monthName.length; i++) {
+			$("#month-dropdown").append("<option value='" + i + "'>" + monthName[i] + "</option>");
+		}
+		$("#month-dropdown").val(g_Month);
 	}
-	$("#month-dropdown").val(g_Month);
+	populateModal();
 
 
 	//Populate modal day dropdown
@@ -104,27 +113,30 @@ $(function(){
 	populateDayDropdown();
 
 	//Change days when a month is selected
-	$("#month-dropdown").change(function(){
-		populateDayDropdown(parseInt($("#month-dropdown").val()));
-	});
+	function updateDayDropDown() {
+		$("#month-dropdown").change(function(){
+			populateDayDropdown(parseInt($("#month-dropdown").val()));
+			$('select').material_select();
+		});
+	}
+	updateDayDropDown();
 
-	$('select').material_select();
 	
 	////Create cards for each day... so fucking hacky... definitely not the right way to do this
 	///jQuery madness
 	//Beware of dragons
 
-	numberOfDays = getDaysInMonth();
-
-	var weekdaysArr = [];
-	var weekdaysInMonth;
-	for (i = 1; i <= numberOfDays; i++){
-		if (getDayOfWeek(i) !== 0 && getDayOfWeek(i) !== 6){
-			console.log(getDayOfWeek(i));
-			weekdaysArr.push(i);
+	function getWeekDaysInMonth(){
+		for (i = 1; i <= numberOfDays; i++){
+			if (getDayOfWeek(i) !== 0 && getDayOfWeek(i) !== 6){
+				console.log(getDayOfWeek(i));
+				weekdaysArr.push(i);
+			}
 		}
+		weekdaysInMonth = weekdaysArr.length;
 	}
-	weekdaysInMonth = weekdaysArr.length;
+	getWeekDaysInMonth();
+
 	console.log(weekdaysInMonth);
 
 
@@ -161,10 +173,15 @@ $(function(){
 	function addTextToCards() {
 		$(".card-title").each(function(index){
 			$(this).text(weekdaysArr[index-1]);
+			$(this).attr("id", weekdaysArr[index-1]);
+			if (weekdaysArr[index-1] === g_CurrentDay){
+				$(this).append("<span class='badge'>Today</span>");
+			}
 		});
-		console.log(weekdaysArr);
 	}
 	addTextToCards();
+
+	
 
 });
 
