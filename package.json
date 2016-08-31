@@ -5,8 +5,13 @@
   "main": "server.js",
   "author": "Aidan Vanleuven",
   "license": "MIT",
+"repository" :
+  { "type" : "git"
+  , "url" : "https://github.com/aidanvanleuven/CalendarWebApp.git"
+  },
   "dependencies": {
     "compression": "^1.6.2",
+    "diskdb": "^0.1.15",
     "express": "^4.14.0",
     "materialize-css": "^0.97.7"
   }

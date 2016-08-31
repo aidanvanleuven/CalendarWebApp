@@ -1,6 +1,6 @@
 //Global variables -- based on current date
-var g_Month = moment().add(3,"month").month();								//Current month; zero based
-var g_DaysInMonth = moment().add(3,"month").daysInMonth();					//Number of days in current month
+var g_Month = moment().add(-1,"month").month();								//Current month; zero based
+var g_DaysInMonth = moment().add(-1,"month").daysInMonth();					//Number of days in current month
 var g_CurrentDay = moment().date();							//Current day of the month
 var g_CurrentYear = moment().year();						//Current year
 
@@ -113,44 +113,58 @@ $(function(){
 	////Create cards for each day... so fucking hacky... definitely not the right way to do this
 	///jQuery madness
 	//Beware of dragons
+
 	numberOfDays = getDaysInMonth();
 
 	var weekdaysArr = [];
 	var weekdaysInMonth;
-	for (i = 0; i < numberOfDays; i++){
+	for (i = 1; i <= numberOfDays; i++){
 		if (getDayOfWeek(i) !== 0 && getDayOfWeek(i) !== 6){
+			console.log(getDayOfWeek(i));
 			weekdaysArr.push(i);
 		}
 	}
 	weekdaysInMonth = weekdaysArr.length;
+	console.log(weekdaysInMonth);
 
-	var j,k;
-	var count = 0;
 
-	for (i = 0; i < 5; i++){
-		$(".row-template").clone().appendTo(".page-wrapper").removeClass("hide row-template").addClass("new-row");
 
-		for (j = 0; j < 5; j++){
-			
-			if (j === 0){
-				$(".column-template").clone().appendTo(".new-row:eq("+i+")").removeClass("hide column-template").addClass("new-column");
-			} else {
-				$(".column-template").clone().appendTo(".new-row:eq("+i+")").removeClass("hide offset-s1 column-template").addClass("new-column");
+	function createCards(){
+		var j,k;
+		var count = 0;
+
+		for (i = 0; i < 5; i++){
+			$(".row-template").clone().appendTo(".page-wrapper").removeClass("hide row-template").addClass("new-row");
+
+			for (j = 0; j < 5; j++){
+				if (j === 0){
+					$(".column-template").clone().appendTo(".new-row:eq("+i+")").removeClass("hide column-template").addClass("new-column");
+				} else {
+					$(".column-template").clone().appendTo(".new-row:eq("+i+")").removeClass("hide offset-s1 column-template").addClass("new-column");
+				}
 			}
-			
-		}
-		for (k = 0; k < 5; k++){
-		
-			if ($(".new-card").length < weekdaysInMonth) {
-				$(".card-template").clone().appendTo(".new-column:eq("+count+")").removeClass("hide card-template").addClass("new-card");
+
+			for (k = 0; k < 5; k++){
+				if ($(".new-card").length < weekdaysInMonth) {
+					if (getDayOfWeek(1) <= count+1){
+						$(".card-template").clone().appendTo(".new-column:eq("+count+")").removeClass("hide card-template").addClass("new-card");
+					} else if (getDayOfWeek(1) === 0 || getDayOfWeek(1) === 6){
+						$(".card-template").clone().appendTo(".new-column:eq("+count+")").removeClass("hide card-template").addClass("new-card");
+					}
+				}
 				count++;
 			}
-			
-			console.log(count);
-			//console.log(getDayOfWeek(count));
 		}
-
 	}
+	createCards();
+
+	function addTextToCards() {
+		$(".card-title").each(function(index){
+			$(this).text(weekdaysArr[index-1]);
+		});
+		console.log(weekdaysArr);
+	}
+	addTextToCards();
 
 });
 
