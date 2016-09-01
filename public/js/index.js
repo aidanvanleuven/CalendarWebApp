@@ -21,7 +21,7 @@ monthName[9] = "October";
 monthName[10] = "November";
 monthName[11] = "December";
 
-var socket = io();
+
 
 	//Get number of days in any month; Zero based
 	function getDaysInMonth(month,year){
@@ -101,7 +101,7 @@ var socket = io();
 			$(".card-content").each(function(index){		//Whoops
 				if ($(this).attr("id") == entries[i].day){
 					$(this).children(".entry-space").append(
-						"<a><span class='new badge " + entries[i].color + "' data-badge-caption=''" + "id=" + entries[i].color + ">" +entries[i].title + "</span></a><br>"
+						"<a><span class='new badge "+entries[i].color+"' data-badge-caption=''>"+entries[i].title+"</span></a><br>"
 					);
 				}
 			});
@@ -121,9 +121,7 @@ var socket = io();
 		$.post("/addentry", sendData, function(data){
 			if (data.success === true){
 				Materialize.toast('Success!', 2500);
-
-				socket.emit('success', true);
-
+				$("#label-textarea").empty();
 				getEntries();
 			} else {
 				Materialize.toast('There was an error', 3000);
@@ -139,16 +137,12 @@ var socket = io();
 		$("span.new.badge").click(function () {
 			sendData = {
 				title : $(this).text(),
-				day : $(this).parent().parent().parent().attr("id"),
-				color : $(this).attr("id"),
-				month : g_Month
+				day : $(this).parent().parent().parent().attr("id")
 			};
-			console.log();
-			console.log(sendData);
+
 			$.post("/deleteentry", sendData, function(data){
 				if (data.success === true){
 					Materialize.toast('Deleted', 1000);
-					socket.emit('success', true);
 					getEntries();
 				} else {
 					Materialize.toast('There was an error', 4000);
@@ -156,38 +150,23 @@ var socket = io();
 			});			
 		});
 	}
-	$(window).resize(function() {
-		if( (screen.availHeight || screen.height-30) <= window.innerHeight) {
-    		$(".card").css("height", "235");
-		} else {
-			$(".card").css("height", "208");
-		}
-	});
+
+	if( (screen.availHeight || screen.height-30) <= window.innerHeight) {
+    	$(".card").css("height", "235");
+	}
 
 	function newEntryClick() {
 		$('#label-textarea').val("");
 		$('#label-textarea').trigger('autoresize');
-
 		$('#modal1').openModal();
 	}
 
 //On page load...
 $(function(){
-
-	socket.on('refresh', function(){
-		getEntries();
-	});
-
-	if( (screen.availHeight || screen.height-30) <= window.innerHeight) {
-    		$(".card").css("height", "235");
-    }
-
-	//Prevent newline on textarea... submit form instead
+	//Prevent newline on textarea :)
 	$('#label-textarea').keydown(function(e) {
 		if(e.keyCode == 13) {
 			e.preventDefault();
-			modalSendData();
-			$('#modal1').closeModal();
 		}
 	});
 
@@ -297,4 +276,3 @@ $(function(){
 	addTextToCards();
 
 });
-	
