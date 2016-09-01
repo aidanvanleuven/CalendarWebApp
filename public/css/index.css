@@ -12,6 +12,10 @@ span, a, li {
 .row {
 	margin-bottom: 10px;
 }
+.col {
+	padding-left:10px;
+	padding-right: 10px;
+}
 span.badge.new {
 	right:auto;
 	font-size: 0.95rem;

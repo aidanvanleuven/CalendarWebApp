@@ -21,7 +21,7 @@ monthName[9] = "October";
 monthName[10] = "November";
 monthName[11] = "December";
 
-
+var socket = io();
 
 	//Get number of days in any month; Zero based
 	function getDaysInMonth(month,year){
@@ -121,7 +121,9 @@ monthName[11] = "December";
 		$.post("/addentry", sendData, function(data){
 			if (data.success === true){
 				Materialize.toast('Success!', 2500);
-				$("#label-textarea").empty();
+
+				socket.emit('success', true);
+
 				getEntries();
 			} else {
 				Materialize.toast('There was an error', 3000);
@@ -143,6 +145,7 @@ monthName[11] = "December";
 			$.post("/deleteentry", sendData, function(data){
 				if (data.success === true){
 					Materialize.toast('Deleted', 1000);
+					socket.emit('success', true);
 					getEntries();
 				} else {
 					Materialize.toast('There was an error', 4000);
@@ -150,23 +153,45 @@ monthName[11] = "December";
 			});			
 		});
 	}
-
-	if( (screen.availHeight || screen.height-30) <= window.innerHeight) {
-    	$(".card").css("height", "235");
-	}
+	$(window).resize(function() {
+		if( (screen.availHeight || screen.height-30) <= window.innerHeight) {
+    		$(".card").css("height", "235");
+		} else {
+			$(".card").css("height", "208");
+		}
+	});
 
 	function newEntryClick() {
 		$('#label-textarea').val("");
 		$('#label-textarea').trigger('autoresize');
-		$('#modal1').openModal();
+
+		$('#modal1').openModal(function(){
+			("#label-textarea").focus();
+		});
 	}
 
 //On page load...
 $(function(){
-	//Prevent newline on textarea :)
+
+	socket.on('refresh', function(){
+		getEntries();
+	});
+
+	if( (screen.availHeight || screen.height-30) <= window.innerHeight) {
+    		$(".card").css("height", "235");
+    }
+
+    socket.on('refresh', function(){
+
+    });
+
+
+	//Prevent newline on textarea... submit form instead
 	$('#label-textarea').keydown(function(e) {
 		if(e.keyCode == 13) {
 			e.preventDefault();
+			modalSendData();
+			$('#modal1').closeModal();
 		}
 	});
 
