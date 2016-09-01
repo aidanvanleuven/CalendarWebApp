@@ -12,6 +12,10 @@ span, a, li {
 .row {
 	margin-bottom: 10px;
 }
+.col {
+	padding-left:10px;
+	padding-right: 10px;
+}
 span.badge.new {
 	right:auto;
 	font-size: 0.95rem;
@@ -49,5 +53,5 @@ nav .brand-logo {
 }
 .page-wrapper {
 	background: url(/img/wallpaper.jpg) no-repeat center center fixed;
-	padding-bottom: 10px;
+	padding-bottom: 1px;
 }

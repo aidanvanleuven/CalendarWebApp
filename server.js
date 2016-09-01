@@ -1,8 +1,11 @@
 var compression = require('compression');
 var express = require('express');
+var http = require('http');
 var app = express();
 var bodyParser = require('body-parser');
 var db = require('diskdb');
+var server = http.createServer(app);
+var io = require('socket.io').listen(server);
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -14,7 +17,6 @@ db = db.connect(__dirname, ['entries']);
 
 app.post('/addentry', function(req, res){
     db.entries.save(req.body);
-    console.log(db.entries.count());
     res.json({success: true});
 });
 
@@ -28,10 +30,15 @@ app.post('/deleteentry', function(req,res){
 	res.json({success: true});
 });
 
-console.log(db.entries.count({day : "1"}));
-
 app.use(compression());
 app.use(express.static('public'));
 
+io.on('connection', function(socket){
+    socket.on('success', function(){
+    	console.log("Send refresh to all clients");
+    	io.emit('refresh');
+  	});
+});
 
-var server = app.listen(3000);
+
+server.listen(3000);
