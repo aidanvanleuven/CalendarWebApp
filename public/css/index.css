@@ -42,3 +42,8 @@ nav .brand-logo {
 #color-radios {
 	margin-bottom: 265px;
 }
+#toast-container {
+    top: 90%;
+    right: 45%;
+    width: 10%;
+}

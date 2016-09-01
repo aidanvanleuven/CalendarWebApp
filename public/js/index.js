@@ -1,10 +1,12 @@
-//Global variables -- based on current date
+//Global variables (ugh) -- based on current date
 var g_Month = moment().month();								//Current month; zero based
 var g_DaysInMonth = moment().daysInMonth();					//Number of days in current month
 var g_CurrentDay = moment().date();							//Current day of the month
 var g_CurrentYear = moment().year();						//Current year
-var weekdaysArr = [];
-var weekdaysInMonth;
+var weekdaysArr = [];										//Array solely for the purpose of calulating weekdaysInMonth
+var weekdaysInMonth;										//Number of weekdays (M-F) in the current month
+var monthName = [];											//Array containing the names of each month; monthName[0] returns January
+var entries = [];												//Array containing all entries in the current month
 
 
 
@@ -43,14 +45,78 @@ function getDayOfWeek(day, month){
 	return moment(parse, "D-M").day();
 }
 
+	//Get all entries for the current month
+	function getEntries() {
+		var sendData = {
+			month: g_Month
+		};
+		console.log(sendData);
+		$.post("/getentries", sendData, function (data){
+			entries = data;
+			console.log(entries);
+			addEntriesToCards();
+		});
+		
+	}
+
+	//Handle color change on hover for badges
+	function hoverEffect(){
+		$("span.new.badge").hover(
+			function () {
+				$(this).addClass("darken-2");
+			},
+			function() {
+				$(this).removeClass("darken-2");
+			}
+		);
+	}
+
+	//NEVER make a function inside a for loop
+	function addEntriesToCards() {
+		$(".entry-space").empty();
+		for (i = 0; i < entries.length; i++){
+			$(".card-content").each(function(index){
+				if ($(this).attr("id") == entries[i].day){
+					$(this).children(".entry-space").append(
+						"<a><span class='new badge "+entries[i].color+"' data-badge-caption=''>"+entries[i].title+"</span></a><br>"
+					);
+				}
+			});
+		}
+		hoverEffect();
+	}
+
+function modalSendData(){
+	var sendData = {
+		month: parseInt($("#month-dropdown").val()),
+		day: parseInt($("#day-dropdown").val()) + 1,
+		title: $("#label-textarea").val(),
+		color: $("#color-radios > p :checked").attr("id")
+	};
+	if (sendData.title !== undefined && sendData.title !== "" && sendData.color !== undefined){
+		$.post("/addentry", sendData, function(data){
+			if (data.success === true){
+				Materialize.toast('Success!', 2000);
+				getEntries();
+			} else {
+				Materialize.toast('There was an error', 3000);
+			}
+		});
+		$("#label-textarea").empty();
+	} else {
+		alert("Label and color must be filled out.");
+	}
+}
+
 //On page load...
 $(function(){
-	var monthName = [];
 
 	//Change card height if fullscreen
 	if (window.innerHeight == screen.height) {
 		$(".card").css("height", "235");
 	}
+
+	getEntries();
 
 	//Show current month as the header and set month name array
 	function monthAsHeader(){
@@ -122,14 +188,12 @@ $(function(){
 	updateDayDropDown();
 
 	
-	////Create cards for each day... so fucking hacky... definitely not the right way to do this
-	///jQuery madness
-	//Beware of dragons
+	///Create cards for each day... a little weird but it works
+	//Be wary
 
 	function getWeekDaysInMonth(){
 		for (i = 1; i <= numberOfDays; i++){
 			if (getDayOfWeek(i) !== 0 && getDayOfWeek(i) !== 6){
-				console.log(getDayOfWeek(i));
 				weekdaysArr.push(i);
 			}
 		}
@@ -137,7 +201,6 @@ $(function(){
 	}
 	getWeekDaysInMonth();
 
-	console.log(weekdaysInMonth);
 
 
 
@@ -169,11 +232,11 @@ $(function(){
 		}
 	}
 	createCards();
-
+	//Adds text and the "Today" badge to the cards
 	function addTextToCards() {
 		$(".card-title").each(function(index){
 			$(this).text(weekdaysArr[index-1]);
-			$(this).attr("id", weekdaysArr[index-1]);
+			$(this).parent().attr("id", weekdaysArr[index-1]);
 			if (weekdaysArr[index-1] === g_CurrentDay){
 				$(this).append("<span class='badge'>Today</span>");
 			}
@@ -182,15 +245,6 @@ $(function(){
 	addTextToCards();
 
 	
+	
 
 });
-
-//Handle color change on hover for badges
-$("span.badge.new").hover(
-	function () {
-		$(this).addClass("darken-2");
-	},
-	function() {
-		$(this).removeClass("darken-2");
-	}
-);
