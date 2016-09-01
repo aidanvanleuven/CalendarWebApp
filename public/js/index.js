@@ -101,7 +101,7 @@ var socket = io();
 			$(".card-content").each(function(index){		//Whoops
 				if ($(this).attr("id") == entries[i].day){
 					$(this).children(".entry-space").append(
-						"<a><span class='new badge "+entries[i].color+"' data-badge-caption=''>"+entries[i].title+"</span></a><br>"
+						"<a><span class='new badge " + entries[i].color + "' data-badge-caption=''" + "id=" + entries[i].color + ">" +entries[i].title + "</span></a><br>"
 					);
 				}
 			});
@@ -139,9 +139,12 @@ var socket = io();
 		$("span.new.badge").click(function () {
 			sendData = {
 				title : $(this).text(),
-				day : $(this).parent().parent().parent().attr("id")
+				day : $(this).parent().parent().parent().attr("id"),
+				color : $(this).attr("id"),
+				month : g_Month
 			};
-
+			console.log();
+			console.log(sendData);
 			$.post("/deleteentry", sendData, function(data){
 				if (data.success === true){
 					Materialize.toast('Deleted', 1000);
@@ -165,9 +168,7 @@ var socket = io();
 		$('#label-textarea').val("");
 		$('#label-textarea').trigger('autoresize');
 
-		$('#modal1').openModal(function(){
-			("#label-textarea").focus();
-		});
+		$('#modal1').openModal();
 	}
 
 //On page load...
@@ -180,11 +181,6 @@ $(function(){
 	if( (screen.availHeight || screen.height-30) <= window.innerHeight) {
     		$(".card").css("height", "235");
     }
-
-    socket.on('refresh', function(){
-
-    });
-
 
 	//Prevent newline on textarea... submit form instead
 	$('#label-textarea').keydown(function(e) {
