@@ -6,44 +6,67 @@ var g_CurrentYear = moment().year();						//Current year
 var weekdaysArr = [];										//Array solely for the purpose of calulating weekdaysInMonth
 var weekdaysInMonth;										//Number of weekdays (M-F) in the current month
 var monthName = [];											//Array containing the names of each month; monthName[0] returns January
-var entries = [];												//Array containing all entries in the current month
+var entries = [];											//Array containing all entries in the current month
+
+monthName[0] = "January";
+monthName[1] = "February";
+monthName[2] = "March";
+monthName[3] = "April";
+monthName[4] = "May";
+monthName[5] = "June";
+monthName[6] = "July";
+monthName[7] = "August";
+monthName[8] = "September";
+monthName[9] = "October";
+monthName[10] = "November";
+monthName[11] = "December";
 
 
 
-//Get number of days in any month; Zero based
-function getDaysInMonth(month,year){
-	if (month === undefined){
-		month = g_Month;
+	//Get number of days in any month; Zero based
+	function getDaysInMonth(month,year){
+		if (month === undefined){
+			month = g_Month;
+		}
+		if (year === undefined){
+			year = g_CurrentYear;
+		}
+		var a = month+1;
+		var b = year;
+		a.toString();
+		b.toString();
+		var parse = a+"-"+b;
+		return moment(parse,"M-YYYY").daysInMonth();
 	}
-	if (year === undefined){
-		year = g_CurrentYear;
-	}
-	var a = month+1;
-	var b = year;
-	a.toString();
-	b.toString();
-	var parse = a+"-"+b;
-	return moment(parse,"M-YYYY").daysInMonth();
-}
 
-var numberOfDays = getDaysInMonth();
+	var numberOfDays = getDaysInMonth();
 
-//Get the day of the week for any day and month; day is one based, month is zero based
-function getDayOfWeek(day, month){
-	if (day === undefined){
-		day = g_CurrentDay;
-	}
-	if (month === undefined){
-		month = g_Month;
+	//Get the day of the week for any day and month; day is one based, month is zero based
+	function getDayOfWeek(day, month){
+		if (day === undefined){
+			day = g_CurrentDay;
+		}
+		if (month === undefined){
+			month = g_Month;
+		}
+
+		var a = day;
+		var b = month+1;
+		a.toString();
+		b.toString();
+		var parse = a+"-"+b;
+		return moment(parse, "D-M").day();
 	}
 
-	var a = day;
-	var b = month+1;
-	a.toString();
-	b.toString();
-	var parse = a+"-"+b;
-	return moment(parse, "D-M").day();
-}
+	function getWeekDaysInMonth(){
+		for (i = 1; i <= numberOfDays; i++){
+			if (getDayOfWeek(i) !== 0 && getDayOfWeek(i) !== 6){
+				weekdaysArr.push(i);
+			}
+		}
+		weekdaysInMonth = weekdaysArr.length;
+	}
+	getWeekDaysInMonth();
 
 	//Get all entries for the current month
 	function getEntries() {
@@ -71,11 +94,11 @@ function getDayOfWeek(day, month){
 		);
 	}
 
-	//NEVER make a function inside a for loop
+	//NEVER create a function inside a for loop
 	function addEntriesToCards() {
 		$(".entry-space").empty();
 		for (i = 0; i < entries.length; i++){
-			$(".card-content").each(function(index){
+			$(".card-content").each(function(index){		//Whoops
 				if ($(this).attr("id") == entries[i].day){
 					$(this).children(".entry-space").append(
 						"<a><span class='new badge "+entries[i].color+"' data-badge-caption=''>"+entries[i].title+"</span></a><br>"
@@ -84,57 +107,75 @@ function getDayOfWeek(day, month){
 			});
 		}
 		hoverEffect();
+		clickDelete();
 	}
 
-function modalSendData(){
-	var sendData = {
-		month: parseInt($("#month-dropdown").val()),
-		day: parseInt($("#day-dropdown").val()) + 1,
-		title: $("#label-textarea").val(),
-		color: $("#color-radios > p :checked").attr("id")
-	};
-	if (sendData.title !== undefined && sendData.title !== "" && sendData.color !== undefined){
+	function modalSendData(){
+		var sendData = {
+			month: parseInt($("#month-dropdown").val()),
+			day: parseInt($("#day-dropdown").val()) + 1,
+			title: $("#label-textarea").val(),
+			color: $("#color-radios > p :checked").attr("id")
+		};
+		if (sendData.title !== undefined && sendData.title !== "" && sendData.color !== undefined){
 		$.post("/addentry", sendData, function(data){
 			if (data.success === true){
-				Materialize.toast('Success!', 2000);
+				Materialize.toast('Success!', 2500);
+				$("#label-textarea").empty();
 				getEntries();
 			} else {
 				Materialize.toast('There was an error', 3000);
 			}
 		});
-		$("#label-textarea").empty();
-	} else {
-		alert("Label and color must be filled out.");
+		
+		} else {
+			alert("Label and color must be filled out.");
+		}
 	}
-}
+
+	function clickDelete(){
+		$("span.new.badge").click(function () {
+			sendData = {
+				title : $(this).text(),
+				day : $(this).parent().parent().parent().attr("id")
+			};
+
+			$.post("/deleteentry", sendData, function(data){
+				if (data.success === true){
+					Materialize.toast('Deleted', 1000);
+					getEntries();
+				} else {
+					Materialize.toast('There was an error', 4000);
+				}
+			});			
+		});
+	}
+
+	if( (screen.availHeight || screen.height-30) <= window.innerHeight) {
+    	$(".card").css("height", "235");
+	}
+
+	function newEntryClick() {
+		$('#label-textarea').val("");
+		$('#label-textarea').trigger('autoresize');
+		$('#modal1').openModal();
+	}
 
 //On page load...
 $(function(){
-
-	//Change card height if fullscreen
-	if (window.innerHeight == screen.height) {
-		$(".card").css("height", "235");
-	}
+	//Prevent newline on textarea :)
+	$('#label-textarea').keydown(function(e) {
+		if(e.keyCode == 13) {
+			e.preventDefault();
+		}
+	});
 
 	getEntries();
 
-	//Show current month as the header and set month name array
+	//Show current month as the header
 	function monthAsHeader(){
 		$(".brand-logo").text(function(){
-			monthName[0] = "January";
-			monthName[1] = "February";
-			monthName[2] = "March";
-			monthName[3] = "April";
-			monthName[4] = "May";
-			monthName[5] = "June";
-			monthName[6] = "July";
-			monthName[7] = "August";
-			monthName[8] = "September";
-			monthName[9] = "October";
-			monthName[10] = "November";
-			monthName[11] = "December";
 			var n = monthName[g_Month];
-
 			return n;
 		});
 	}	
@@ -144,7 +185,9 @@ $(function(){
 	function populateModal(){
 		var i;
 		for (i = 0; i < monthName.length; i++) {
-			$("#month-dropdown").append("<option value='" + i + "'>" + monthName[i] + "</option>");
+			if (i >= g_Month){
+				$("#month-dropdown").append("<option value='" + i + "'>" + monthName[i] + "</option>");
+			}
 		}
 		$("#month-dropdown").val(g_Month);
 	}
@@ -159,11 +202,11 @@ $(function(){
 			month = g_Month;
 		}
 
-		var i;
+		var i, j;
 		var numberOfDays = getDaysInMonth(month);
 
 		for(i = 0; i < numberOfDays; i++){
-			var j = i+1;
+			j = i+1;
 			if (getDayOfWeek(j) !== 0 && getDayOfWeek(j, month) !== 6){
 				$("#day-dropdown").append("<option value='" + i + "'>" + j + "</option>");
 			}
@@ -190,19 +233,6 @@ $(function(){
 	
 	///Create cards for each day... a little weird but it works
 	//Be wary
-
-	function getWeekDaysInMonth(){
-		for (i = 1; i <= numberOfDays; i++){
-			if (getDayOfWeek(i) !== 0 && getDayOfWeek(i) !== 6){
-				weekdaysArr.push(i);
-			}
-		}
-		weekdaysInMonth = weekdaysArr.length;
-	}
-	getWeekDaysInMonth();
-
-
-
 
 	function createCards(){
 		var j,k;
@@ -232,6 +262,7 @@ $(function(){
 		}
 	}
 	createCards();
+
 	//Adds text and the "Today" badge to the cards
 	function addTextToCards() {
 		$(".card-title").each(function(index){
@@ -244,7 +275,5 @@ $(function(){
 	}
 	addTextToCards();
 
-	
-	
-
 });
+	

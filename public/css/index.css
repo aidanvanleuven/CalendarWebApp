@@ -47,3 +47,7 @@ nav .brand-logo {
     right: 45%;
     width: 10%;
 }
+.page-wrapper {
+	background: url(/img/wallpaper.jpg) no-repeat center center fixed;
+	padding-bottom: 10px;
+}
