@@ -1,35 +1,25 @@
-//Global variables (ugh) -- based on current date
-
+//Variables
 var g_CurrentMonth = moment().month();
 
-//Get the month the user is currently on, always pass g_Switch
+//Get the month the user is currently on, always pass g_Switch, not ideal anymore, but I don't want to fix
 var g_Month = function(add) {
 	return moment().add(add, "months").month();
 };
+
+//Array containing the names of each month; monthName[0] returns January
+var monthName = [
+"January", "February", "March", "April", "May", "June", "July", 
+"August", "September", "October", "November", "December" ];
+
 var g_Switch = 0;											//Used for changing the user month
 var g_CurrentDay = moment().date();							//Current day of the month
 var g_CurrentYear = moment().year();						//Current year
 var weekdaysArr = [];										//Array solely for the purpose of calulating weekdaysInMonth
 var weekdaysInMonth;										//Number of weekdays (M-F) in the current month
-var monthName = [
-];														//Array containing the names of each month; monthName[0] returns January
 var entries = [];											//Array containing all entries in the current month
-var numberOfDays;
+var numberOfDays;											//# of days in users's month
+var socket = io();											//Socket.io, baby
 
-monthName[0] = "January";									//Populate
-monthName[1] = "February";
-monthName[2] = "March";
-monthName[3] = "April";
-monthName[4] = "May";
-monthName[5] = "June";
-monthName[6] = "July";
-monthName[7] = "August";
-monthName[8] = "September";
-monthName[9] = "October";
-monthName[10] = "November";
-monthName[11] = "December";
-
-	var socket = io();
 
 	//Get number of days in any month; Zero based
 	function getDaysInMonth(month,year){
@@ -65,6 +55,7 @@ monthName[11] = "December";
 		return moment(parse, "D-M").day();
 	}
 
+	//Gets all weekdays in the month for weekdaysArr, and gives the number as weekDaysInMonth
 	function getWeekDaysInMonth(){
 		weekdaysArr = [];
 		for (i = 1; i <= numberOfDays; i++){
@@ -75,7 +66,7 @@ monthName[11] = "December";
 		weekdaysInMonth = weekdaysArr.length;
 	}
 
-	//Get all entries for the current month
+	//Get all entries for the users current month
 	function getEntries() {
 		var sendData = {
 			month: g_Month(g_Switch)
@@ -98,6 +89,7 @@ monthName[11] = "December";
 		);
 	}
 
+	//Add badges to the cards... a bit weird...
 	//NEVER create a function inside a for loop
 	function addEntriesToCards() {
 		$(".entry-space").empty();
@@ -105,7 +97,7 @@ monthName[11] = "December";
 			$(".card-content").each(function(index){		//Whoops
 				if ($(this).attr("id") == entries[i].day){
 					$(this).children(".entry-space").append(
-						"<a><span class='new badge "+entries[i].color+"' data-badge-caption=''>"+entries[i].title+"</span></a><br>"
+						"<a><span class='new badge "+entries[i].color+ " "+"darken-1"+"' data-badge-caption=''>"+entries[i].title+"</span></a><br>"
 					);
 				}
 			});
@@ -114,6 +106,7 @@ monthName[11] = "December";
 		hoverEffect();
 	}
 
+	//Launched on modal submit; Sends data to the server
 	function modalSendData(){
 		var sendData = {
 			month: parseInt($("#month-dropdown").val()),
@@ -121,15 +114,11 @@ monthName[11] = "December";
 			title: $("#label-textarea").val(),
 			color: $("#color-radios > p :checked").attr("id")
 		};
-		console.log(sendData);
 		if (sendData.title !== undefined && sendData.title !== "" && sendData.color !== undefined){
 		$.post("/addentry", sendData, function(data){
 			if (data.success === true){
 				Materialize.toast('Success!', 2500);
-				socket.emit('month', g_Month(g_Switch));
-				if (sendData.month == g_Month(g_Switch)){
-					getEntries();
-				}
+				socket.emit('month', sendData.month);
 			} else {
 				Materialize.toast('There was an error', 3000);
 			}
@@ -140,6 +129,7 @@ monthName[11] = "December";
 		}
 	}
 
+	//Launched on badge click, deletes whichever one was clicked
 	function clickDelete(){
 		$("span.new.badge").click(function () {
 			sendData = {
@@ -149,7 +139,6 @@ monthName[11] = "December";
 				if (data.success === true){
 					Materialize.toast('Deleted', 1000);
 					socket.emit('month', g_Month(g_Switch));
-					getEntries();
 				} else {
 					Materialize.toast('There was an error', 4000);
 				}
@@ -157,6 +146,7 @@ monthName[11] = "December";
 		});
 	}
 
+	//Change card height if the window is resized... wrap this in a function later
 	$(window).resize(function() {
 		if( (screen.availHeight || screen.height-30) <= window.innerHeight) {
     		$(".card").css("height", "235");
@@ -165,6 +155,7 @@ monthName[11] = "December";
 		}
 	});
 
+	//Launches when "New Entry" is clicked, opens the modal etc.
 	function newEntryClick() {
 		$('#label-textarea').val("");
 		$('#label-textarea').trigger('autoresize');
@@ -172,7 +163,7 @@ monthName[11] = "December";
 		$("#label-textarea").focus();
 	}
 
-	//Show current month as the header
+	//Show current users month as the header
 	function monthAsHeader(){
 		$(".brand-logo").text(function(){
 			var n = monthName[g_Month(g_Switch)];
@@ -180,18 +171,19 @@ monthName[11] = "December";
 		});
 	}	
 
+	//Populates the "Month" dropdown in the modal
 	function populateModal(){
 		var i;
 		$("#month-dropdown").empty();
 		for (i = 0; i < monthName.length; i++) {
-			if (i >= g_Month(g_Switch)){
+			if (i >= g_CurrentMonth){
 				$("#month-dropdown").append("<option value='" + i + "'>" + monthName[i] + "</option>");
 			}
 		}
 		$("#month-dropdown").val(g_Month(g_Switch));
 	}
 
-	//Populate modal day dropdown
+	//Populates the "Day" dropdown in the modal
 	function populateDayDropdown(month){
 		$("#day-dropdown").empty();
 
@@ -213,7 +205,7 @@ monthName[11] = "December";
 		$('select').material_select();
 	}
 
-	//Change days when a month is selected
+	//Changes the "Day" dropdown when a month is selected
 	function updateDayDropDown() {
 		$("#month-dropdown").change(function(){
 			populateDayDropdown(parseInt($("#month-dropdown").val()));
@@ -221,6 +213,8 @@ monthName[11] = "December";
 		});
 	}
 
+	//Dynamically adds cards to the page based on a ton of variables; Animates cards
+	//So portable :')
 	function createCards(){
 		var j,k;
 		var count = 0;
@@ -239,26 +233,28 @@ monthName[11] = "December";
 			for (k = 0; k < 5; k++){
 				if ($(".new-card").length < weekdaysInMonth) {
 					if (getDayOfWeek(1) <= count+1){
-						$(".card-template").clone().appendTo(".new-column:eq("+count+")").removeClass("hide card-template").addClass("new-card");
+						$(".card-template").clone().appendTo(".new-column:eq("+count+")").removeClass("hide card-template").addClass("new-card animated");
 					} else if (getDayOfWeek(1) === 0 || getDayOfWeek(1) === 6){
-						$(".card-template").clone().appendTo(".new-column:eq("+count+")").removeClass("hide card-template").addClass("new-card");
+						$(".card-template").clone().appendTo(".new-column:eq("+count+")").removeClass("hide card-template").addClass("new-card animated");
+
 					}
 				}
 				count++;
 			}
 		}
+		$(".new-card").addClass("zoomIn");
 	}
 
+	//Refreshes entries if another user has made a 'destructive' change
 	function socketLoad(){
 		socket.on('month', function(msg){
-			console.log("Change detected");
 			if (msg == g_Month(g_Switch)){
-				console.log("Change applied");
 				getEntries();
 			}
 		});
 	}
 
+	//Sends the modal data on enter
 	function preventEnter(){
 		$('#modal1').keydown(function(e) {
 			if(e.keyCode == 13) {
@@ -269,6 +265,7 @@ monthName[11] = "December";
 		});
 	}
 
+	//Adds the labels to each card
 	function addTextToCards() {
 		$(".card-title").each(function(index){
 			$(this).text(weekdaysArr[index-1]);
@@ -279,12 +276,14 @@ monthName[11] = "December";
 		});
 	}
 
+	//Changes card height if fullscreen
 	function changeCardHeight(){
 		if( (screen.availHeight || screen.height-30) <= window.innerHeight) {
     		$(".card").css("height", "235");
     	}
 	}
 
+	//Button "Previous Month" is clicked, basically reload the page but on the previous month
 	function previousClick(){
 		if(g_Month(g_Switch) !== 0){
 			g_Switch--;
@@ -301,10 +300,12 @@ monthName[11] = "December";
 		}
 	}
 
+	//Button "Next Month" is clicked, basically reload the page but on the next month
 	function nextClick(){
 		if(g_Month(g_Switch) !== 11){
 			g_Switch++;
 			g_Month(g_Switch);
+			$(".new-card").addClass("fadeOutLeft");
 			$(".new-row").remove();
 			getDaysInMonth();
 			getWeekDaysInMonth();
@@ -317,9 +318,11 @@ monthName[11] = "December";
 		}
 	}
 
+	//Month header is clicked, same as above except it brings you to the current month
 	function goToCurrentMonth(){
 		g_Switch = 0;
 		g_Month(g_Switch);
+		$(".new-card").addClass("fadeOutRight");
 		$(".new-row").remove();
 		getDaysInMonth();
 		getWeekDaysInMonth();
@@ -331,30 +334,18 @@ monthName[11] = "December";
 		getEntries();
 		}
 
-//On page load...
-$(function(){
-
-	socketLoad();
-
-	changeCardHeight();
-
-	preventEnter();
-
-	getDaysInMonth();
-
-	getWeekDaysInMonth();
-	
-	monthAsHeader();
-
-	populateModal();
-
-	populateDayDropdown();
-
-	updateDayDropDown();
-
-	createCards();
-
-	addTextToCards();
-
-	getEntries();
-});
+	//Put it all together!
+	$(function(){
+		socketLoad();
+		changeCardHeight();
+		preventEnter();
+		getDaysInMonth();
+		getWeekDaysInMonth();
+		monthAsHeader();
+		populateModal();
+		populateDayDropdown();
+		updateDayDropDown();
+		createCards();
+		addTextToCards();
+		getEntries();
+	});

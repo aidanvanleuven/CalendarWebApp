@@ -18,7 +18,8 @@ span, a, li {
 }
 span.badge.new {
 	right:auto;
-	font-size: 0.95rem;
+	font-size: 0.90rem;
+	font-weight:300;
 }
 .card .card-content {
 	padding:15px;
@@ -27,14 +28,11 @@ span.badge.new {
 	height: 40px;
 	line-height: 40px;
 	box-shadow: none;
-	opacity: 0.97;
-
 }
 .dow-row {
 	height : 25px;
 	line-height: 25px;
 	top:40px;
-	opacity: 0.97;
 	box-shadow: 0 3px 5px 0 rgba(0,0,0,0.16),0 5px 10px 0 rgba(0,0,0,0.12);
 }
 nav .brand-logo {
@@ -56,4 +54,11 @@ body {
 }
 body::-webkit-scrollbar { 
     display: none; 
+}
+html {
+	font-weight:300;
+}
+i {
+	height:40px !important;
+	line-height: 40px !important;
 }
