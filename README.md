@@ -8,14 +8,14 @@ More than likely still chock full of bugs and missing functionality ¯\\\_(ツ)\
 
 Built using several amazing frameworks including:
 
--[Materialize CSS](http://materializecss.com/)
+- [Materialize CSS](http://materializecss.com/)
 
--[DiskDB](https://github.com/arvindr21/diskDB)
+- [DiskDB](https://github.com/arvindr21/diskDB)
 
--[Moment.js](http://momentjs.com/)
+- [Moment.js](http://momentjs.com/)
 
--[jQuery](https://jquery.com/)
+- [jQuery](https://jquery.com/)
 
--[Socket.IO](http://socket.io/)
+- [Socket.IO](http://socket.io/)
 
--[Express.js](https://expressjs.com/)
+- [Express.js](https://expressjs.com/)
