@@ -12,6 +12,10 @@ span, a, li {
 .row {
 	margin-bottom: 10px;
 }
+.col {
+	padding-left:10px;
+	padding-right: 10px;
+}
 span.badge.new {
 	right:auto;
 	font-size: 0.95rem;
@@ -22,14 +26,31 @@ span.badge.new {
 .month-row {
 	height: 40px;
 	line-height: 40px;
+	box-shadow: none;
+	opacity: 0.97;
+
 }
 .dow-row {
 	height : 25px;
 	line-height: 25px;
+	top:40px;
+	opacity: 0.97;
+	box-shadow: 0 3px 5px 0 rgba(0,0,0,0.16),0 5px 10px 0 rgba(0,0,0,0.12);
 }
 nav .brand-logo {
 	font-size: 1.9rem;
 }
 .modal {
-	width:80%;
+	top:2% !important;
+	width:60%;
+	max-height:none;
+	height:96% !important;
+}
+#toast-container {
+    top: 90%;
+    right: 45%;
+    width: 10%;
+}
+body {
+	background: url(/img/wallpaper.jpg) no-repeat center center fixed;
 }
