@@ -27,13 +27,15 @@ span.badge.new {
 	height: 40px;
 	line-height: 40px;
 	box-shadow: none;
+	opacity: 0.97;
 
 }
 .dow-row {
 	height : 25px;
 	line-height: 25px;
 	top:40px;
-	box-shadow: none;
+	opacity: 0.97;
+	box-shadow: 0 3px 5px 0 rgba(0,0,0,0.16),0 5px 10px 0 rgba(0,0,0,0.12);
 }
 nav .brand-logo {
 	font-size: 1.9rem;
@@ -42,16 +44,13 @@ nav .brand-logo {
 	top:2% !important;
 	width:60%;
 	max-height:none;
-}
-#color-radios {
-	margin-bottom: 265px;
+	height:96% !important;
 }
 #toast-container {
     top: 90%;
     right: 45%;
     width: 10%;
 }
-.page-wrapper {
+body {
 	background: url(/img/wallpaper.jpg) no-repeat center center fixed;
-	padding-bottom: 1px;
 }

@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+  <title>J&amp;B Calendar</title>
   <!--Import Google Icon Font-->
   <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <!--Import materialize.css-->
@@ -39,24 +41,6 @@
 	</nav>
 	</div>
 
-<!-- 	<div class="row">
-		<div class="col s2 offset-s1">
-			<div class="card">
-				<div class="card-content">
-					<span class="card-title">1</span>
-					<p>
-						<a href="#"><span class="new badge indigo" data-badge-caption="">Here are a few different</span></a><br>
-						<a href="#"><span class="new badge red" data-badge-caption="">Example items</span></a><br>
-						<a href="#"><span class="new badge purple" data-badge-caption="">Five items maximum per day</span></a><br>
-						<a href="#"><span class="new badge teal" data-badge-caption="">Approvals, Bids...</span></a><br>
-						<a href="#"><span class="new badge green" data-badge-caption="">How long can this be without overflowing</span></a><br>
-						<a href="#"><span class="new badge orange" data-badge-caption="">About 32 to be safe</span></a>
-					</p>
-				</div>
-			</div>
-		</div>
-	</div> -->
-
 	<!-- Day card structure -->
 	<div class="page-wrapper">
 
@@ -77,7 +61,7 @@
 
 	</div>
 
-	<div id="modal1" class="modal">
+	<div id="modal1" class="modal modal-fixed-footer">
 
 		<div class="modal-content">
 
@@ -103,22 +87,22 @@
 			</div>
 
 			<form id="color-radios">
-				<p>Select a color:</p>
+				<p>Status:</p>
 				<p>
 					<input type="radio" name="color" id="red" />
 					<label for="red" class="red-text">Red</label>
 				</p>
 				<p>
-					<input type="radio" name="color" id="orange" />
-					<label for="orange" class="orange-text">Orange</label>
+					<input type="radio" name="color" id="purple" />
+					<label for="purple" class="purple-text">Purple</label>
 				</p>
 				<p>
 					<input type="radio" name="color" id="indigo" />
 					<label for="indigo" class="indigo-text">Indigo</label>
 				</p>
 				<p>
-					<input type="radio" name="color" id="purple" />
-					<label for="purple" class="purple-text">Purple</label>
+					<input type="radio" name="color" id="blue" />
+					<label for="blue" class="light-blue-text">Blue</label>
 				</p>
 				<p>
 					<input type="radio" name="color" id="teal" />
@@ -127,6 +111,18 @@
 				<p>
 					<input type="radio" name="color" id="green" />
 					<label for="green" class="green-text">Green</label>
+				</p>
+				<p>
+					<input type="radio" name="color" id="yellow" />
+					<label for="yellow" class="yellow-text">Yellow</label>
+				</p>
+				<p>
+					<input type="radio" name="color" id="orange" />
+					<label for="orange" class="orange-text">Orange</label>
+				</p>
+				<p>
+					<input type="radio" name="color" id="grey" />
+					<label for="grey" class="grey-text">Gray</label>
 				</p>
 				
 			</form>

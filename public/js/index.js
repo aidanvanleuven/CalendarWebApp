@@ -136,9 +136,7 @@ var socket = io();
 	function clickDelete(){
 		$("span.new.badge").click(function () {
 			sendData = {
-				month : g_Month.toString(),
-				day : $(this).parent().parent().parent().attr("id"),
-				title : $(this).text(),
+				title : $(this).text()
 			};
 			console.log(sendData);
 			$.post("/deleteentry", sendData, function(data){
