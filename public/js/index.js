@@ -1,14 +1,22 @@
 //Global variables (ugh) -- based on current date
-var g_Month = moment().month();								//Current month; zero based
-var g_DaysInMonth = moment().daysInMonth();					//Number of days in current month
+
+var g_CurrentMonth = moment().month();
+
+//zero based; Month change functionality
+var g_Month = function(add) {
+	return moment().add(add, "months").month();
+};
+var g_Switch = 0;											//Used for changing the month
 var g_CurrentDay = moment().date();							//Current day of the month
 var g_CurrentYear = moment().year();						//Current year
 var weekdaysArr = [];										//Array solely for the purpose of calulating weekdaysInMonth
 var weekdaysInMonth;										//Number of weekdays (M-F) in the current month
-var monthName = [];											//Array containing the names of each month; monthName[0] returns January
+var monthName = [
+];														//Array containing the names of each month; monthName[0] returns January
 var entries = [];											//Array containing all entries in the current month
+var numberOfDays;
 
-monthName[0] = "January";
+monthName[0] = "January";									//Populate
 monthName[1] = "February";
 monthName[2] = "March";
 monthName[3] = "April";
@@ -21,12 +29,12 @@ monthName[9] = "October";
 monthName[10] = "November";
 monthName[11] = "December";
 
-var socket = io();
+	var socket = io();
 
 	//Get number of days in any month; Zero based
 	function getDaysInMonth(month,year){
 		if (month === undefined){
-			month = g_Month;
+			month = g_Month(g_Switch);
 		}
 		if (year === undefined){
 			year = g_CurrentYear;
@@ -36,10 +44,9 @@ var socket = io();
 		a.toString();
 		b.toString();
 		var parse = a+"-"+b;
+		numberOfDays = moment(parse,"M-YYYY").daysInMonth();
 		return moment(parse,"M-YYYY").daysInMonth();
 	}
-
-	var numberOfDays = getDaysInMonth();
 
 	//Get the day of the week for any day and month; day is one based, month is zero based
 	function getDayOfWeek(day, month){
@@ -47,7 +54,7 @@ var socket = io();
 			day = g_CurrentDay;
 		}
 		if (month === undefined){
-			month = g_Month;
+			month = g_Month(g_Switch);
 		}
 
 		var a = day;
@@ -59,6 +66,7 @@ var socket = io();
 	}
 
 	function getWeekDaysInMonth(){
+		weekdaysArr = [];
 		for (i = 1; i <= numberOfDays; i++){
 			if (getDayOfWeek(i) !== 0 && getDayOfWeek(i) !== 6){
 				weekdaysArr.push(i);
@@ -66,20 +74,16 @@ var socket = io();
 		}
 		weekdaysInMonth = weekdaysArr.length;
 	}
-	getWeekDaysInMonth();
 
 	//Get all entries for the current month
 	function getEntries() {
 		var sendData = {
-			month: g_Month
+			month: g_Month(g_Switch)
 		};
-		console.log(sendData);
 		$.post("/getentries", sendData, function (data){
 			entries = data;
-			console.log(entries);
 			addEntriesToCards();
 		});
-		
 	}
 
 	//Handle color change on hover for badges
@@ -106,17 +110,18 @@ var socket = io();
 				}
 			});
 		}
-		hoverEffect();
 		clickDelete();
+		hoverEffect();
 	}
 
 	function modalSendData(){
 		var sendData = {
 			month: parseInt($("#month-dropdown").val()),
-			day: parseInt($("#day-dropdown").val()) + 1,
+			day: $("#day-dropdown").children("option").filter(":selected").text(),
 			title: $("#label-textarea").val(),
 			color: $("#color-radios > p :checked").attr("id")
 		};
+		console.log(sendData);
 		if (sendData.title !== undefined && sendData.title !== "" && sendData.color !== undefined){
 		$.post("/addentry", sendData, function(data){
 			if (data.success === true){
@@ -138,7 +143,6 @@ var socket = io();
 			sendData = {
 				title : $(this).text()
 			};
-			console.log(sendData);
 			$.post("/deleteentry", sendData, function(data){
 				if (data.success === true){
 					Materialize.toast('Deleted', 1000);
@@ -165,62 +169,31 @@ var socket = io();
 		$('#modal1').openModal();
 	}
 
-//On page load...
-$(function(){
-
-
-	socket.on('refresh', function(){
-		getEntries();
-	});
-
-	if( (screen.availHeight || screen.height-30) <= window.innerHeight) {
-    		$(".card").css("height", "235");
-    }
-
-
-	//Prevent newline on textarea... submit form instead
-	$('#modal1').keydown(function(e) {
-		if(e.keyCode == 13) {
-			e.preventDefault();
-			modalSendData();
-			$('#modal1').closeModal();
-		}
-	});
-
-	if( (screen.availHeight || screen.height-30) <= window.innerHeight) {
-    		$(".card").css("height", "235");
-    }
-
-	getEntries();
-
 	//Show current month as the header
 	function monthAsHeader(){
 		$(".brand-logo").text(function(){
-			var n = monthName[g_Month];
+			var n = monthName[g_Month(g_Switch)];
 			return n;
 		});
 	}	
-	monthAsHeader();
 
-	//Populate modal month dropdown
 	function populateModal(){
 		var i;
+		$("#month-dropdown").empty();
 		for (i = 0; i < monthName.length; i++) {
-			if (i >= g_Month){
+			if (i >= g_Month(g_Switch)){
 				$("#month-dropdown").append("<option value='" + i + "'>" + monthName[i] + "</option>");
 			}
 		}
-		$("#month-dropdown").val(g_Month);
+		$("#month-dropdown").val(g_Month(g_Switch));
 	}
-	populateModal();
-
 
 	//Populate modal day dropdown
 	function populateDayDropdown(month){
 		$("#day-dropdown").empty();
 
 		if (month === undefined){
-			month = g_Month;
+			month = g_Month(g_Switch);
 		}
 
 		var i, j;
@@ -228,19 +201,14 @@ $(function(){
 
 		for(i = 0; i < numberOfDays; i++){
 			j = i+1;
-			if (getDayOfWeek(j) !== 0 && getDayOfWeek(j, month) !== 6){
+			if (getDayOfWeek(j, month) !== 0 && getDayOfWeek(j, month) !== 6){
 				$("#day-dropdown").append("<option value='" + i + "'>" + j + "</option>");
 			}
 		}
-		if (month == g_Month){
-			$("#day-dropdown").val(g_CurrentDay-1);
-		} else {
-			$("#day-dropdown").val(0);
-		}
+		
 
 		$('select').material_select();
 	}
-	populateDayDropdown();
 
 	//Change days when a month is selected
 	function updateDayDropDown() {
@@ -249,11 +217,6 @@ $(function(){
 			$('select').material_select();
 		});
 	}
-	updateDayDropDown();
-
-	
-	///Create cards for each day... a little weird but it works
-	//Be wary
 
 	function createCards(){
 		var j,k;
@@ -282,18 +245,95 @@ $(function(){
 			}
 		}
 	}
-	createCards();
 
-	//Adds text and the "Today" badge to the cards
+	function socketLoad(){
+		socket.on('refresh', function(){
+			getEntries();
+		});
+	}
+
+	function preventEnter(){
+		$('#modal1').keydown(function(e) {
+			if(e.keyCode == 13) {
+				e.preventDefault();
+				modalSendData();
+				$('#modal1').closeModal();
+			}
+		});
+	}
+
 	function addTextToCards() {
 		$(".card-title").each(function(index){
 			$(this).text(weekdaysArr[index-1]);
 			$(this).parent().attr("id", weekdaysArr[index-1]);
-			if (weekdaysArr[index-1] === g_CurrentDay){
+			if ($(this).text() == g_CurrentDay && g_Month(g_Switch) == g_CurrentMonth){
 				$(this).append("<span class='badge'>Today</span>");
 			}
 		});
 	}
+
+	function changeCardHeight(){
+		if( (screen.availHeight || screen.height-30) <= window.innerHeight) {
+    		$(".card").css("height", "235");
+    	}
+	}
+
+	function previousClick(){
+		if(g_Month(g_Switch) !== 0){
+			g_Switch--;
+			g_Month(g_Switch);
+			$(".new-row").remove();
+			getDaysInMonth();
+			getWeekDaysInMonth();
+			monthAsHeader();
+			populateModal();
+			populateDayDropdown();
+			createCards();
+			addTextToCards();
+			getEntries();
+		}
+	}
+
+	function nextClick(){
+		if(g_Month(g_Switch) !== 11){
+			g_Switch++;
+			g_Month(g_Switch);
+			$(".new-row").remove();
+			getDaysInMonth();
+			getWeekDaysInMonth();
+			monthAsHeader();
+			populateModal();
+			populateDayDropdown();
+			createCards();
+			addTextToCards();
+			getEntries();
+		}
+	}
+
+//On page load...
+$(function(){
+
+	socketLoad();
+
+	changeCardHeight();
+
+	preventEnter();
+
+	getDaysInMonth();
+
+	getWeekDaysInMonth();
+	
+	monthAsHeader();
+
+	populateModal();
+
+	populateDayDropdown();
+
+	updateDayDropDown();
+
+	createCards();
+
 	addTextToCards();
 
+	getEntries();
 });

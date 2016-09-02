@@ -1,6 +1,6 @@
 {
   "name": "calendar-app",
-  "version": "0.0.2",
+  "version": "1.0",
   "description": "Calendar application for J&B Drafting",
   "main": "server.js",
   "author": "Aidan Vanleuven",

@@ -18,6 +18,14 @@
 	<div class="navbar-fixed">
 	<nav class="month-row">
 		<div class="nav-wrapper indigo">
+			<ul class="left">
+				<li>
+					<a onclick="previousClick();">Previous Month</a>
+				</li>
+				<li>
+					<a onclick="nextClick();">Next Month</a>
+				</li>
+			</ul>
 
 			<a class="brand-logo center"></a>
 
@@ -82,7 +90,7 @@
 			</div>
 
 			<div class="input-field">
-				<textarea id="label-textarea" class="materialize-textarea" maxlength="32"></textarea>
+				<input id="label-textarea" type="text" maxlength="32"></input>
 				<label for="label-textarea">Enter label here (maximum 32 characters):</label>
 			</div>
 
