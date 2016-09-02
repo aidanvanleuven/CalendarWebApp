@@ -54,3 +54,6 @@ nav .brand-logo {
 body {
 	background: url(/img/wallpaper.jpg) no-repeat center center fixed;
 }
+body::-webkit-scrollbar { 
+    display: none; 
+}

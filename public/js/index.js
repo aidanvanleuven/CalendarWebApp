@@ -2,11 +2,11 @@
 
 var g_CurrentMonth = moment().month();
 
-//zero based; Month change functionality
+//Get the month the user is currently on, always pass g_Switch
 var g_Month = function(add) {
 	return moment().add(add, "months").month();
 };
-var g_Switch = 0;											//Used for changing the month
+var g_Switch = 0;											//Used for changing the user month
 var g_CurrentDay = moment().date();							//Current day of the month
 var g_CurrentYear = moment().year();						//Current year
 var weekdaysArr = [];										//Array solely for the purpose of calulating weekdaysInMonth
@@ -126,8 +126,10 @@ monthName[11] = "December";
 		$.post("/addentry", sendData, function(data){
 			if (data.success === true){
 				Materialize.toast('Success!', 2500);
-				socket.emit('success', true);
-				getEntries();
+				socket.emit('month', g_Month(g_Switch));
+				if (sendData.month == g_Month(g_Switch)){
+					getEntries();
+				}
 			} else {
 				Materialize.toast('There was an error', 3000);
 			}
@@ -146,7 +148,7 @@ monthName[11] = "December";
 			$.post("/deleteentry", sendData, function(data){
 				if (data.success === true){
 					Materialize.toast('Deleted', 1000);
-					socket.emit('success', true);
+					socket.emit('month', g_Month(g_Switch));
 					getEntries();
 				} else {
 					Materialize.toast('There was an error', 4000);
@@ -167,6 +169,7 @@ monthName[11] = "December";
 		$('#label-textarea').val("");
 		$('#label-textarea').trigger('autoresize');
 		$('#modal1').openModal();
+		$("#label-textarea").focus();
 	}
 
 	//Show current month as the header
@@ -247,8 +250,12 @@ monthName[11] = "December";
 	}
 
 	function socketLoad(){
-		socket.on('refresh', function(){
-			getEntries();
+		socket.on('month', function(msg){
+			console.log("Change detected");
+			if (msg == g_Month(g_Switch)){
+				console.log("Change applied");
+				getEntries();
+			}
 		});
 	}
 
@@ -309,6 +316,20 @@ monthName[11] = "December";
 			getEntries();
 		}
 	}
+
+	function goToCurrentMonth(){
+		g_Switch = 0;
+		g_Month(g_Switch);
+		$(".new-row").remove();
+		getDaysInMonth();
+		getWeekDaysInMonth();
+		monthAsHeader();
+		populateModal();
+		populateDayDropdown();
+		createCards();
+		addTextToCards();
+		getEntries();
+		}
 
 //On page load...
 $(function(){

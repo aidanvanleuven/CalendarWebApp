@@ -34,9 +34,9 @@ app.use(compression());
 app.use(express.static('public'));
 
 io.on('connection', function(socket){
-    socket.on('success', function(){
-    	console.log("Send refresh to all clients");
-    	io.emit('refresh');
+    socket.on('month', function(msg){
+    	io.emit('month', msg);
+    	console.log("Refreshed all clients");
   	});
 });
 
