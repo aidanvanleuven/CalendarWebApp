@@ -38,7 +38,7 @@ app.use(compression());
 //Spin up a server
 app.use(express.static('public'));
 
-//Listen for a packet from server; One client broadcasts to all other clients; Instant updates without refreshes
+//Listen for a packet from client; One client broadcasts to all other clients; Instant updates without refreshes
 io.on('connection', function(socket){
     socket.on('month', function(msg){
     	io.emit('month', msg);

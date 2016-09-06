@@ -20,7 +20,6 @@ var entries = [];											//Array containing all entries in the current month
 var numberOfDays;											//# of days in users's month
 var socket = io();											//Socket.io, baby
 
-
 	//Get number of days in any month; Zero based
 	function getDaysInMonth(month,year){
 		if (month === undefined){
@@ -89,19 +88,20 @@ var socket = io();											//Socket.io, baby
 		);
 	}
 
-	//Add badges to the cards... a bit weird...
-	//NEVER create a function inside a for loop
-	function addEntriesToCards() {
+	//Add badges to the cards... probably not best practice
+	function addEntriesToCards(){
 		$(".entry-space").empty();
-		for (i = 0; i < entries.length; i++){
-			$(".card-content").each(function(index){		//Whoops
+		console.log(entries);
+		$(".card-content").each(function(index){
+			for (i = 0; i < entries.length; i++){
 				if ($(this).attr("id") == entries[i].day){
 					$(this).children(".entry-space").append(
-						"<a><span class='new badge "+entries[i].color+ " "+"darken-1"+"' data-badge-caption=''>"+entries[i].title+"</span></a><br>"
+						"<a><span class='new badge tooltipped "+entries[i].color+ " "+"darken-1"+"' data-badge-caption=''data-position='bottom' data-delay='0' data-tooltip='Click to delete'>"+entries[i].title+"</span></a><br>"
 					);
 				}
-			});
-		}
+			}
+		});
+		$('.tooltipped').tooltip();
 		clickDelete();
 		hoverEffect();
 	}
@@ -142,6 +142,7 @@ var socket = io();											//Socket.io, baby
 				} else {
 					Materialize.toast('There was an error', 4000);
 				}
+				$('.tooltipped').tooltip("remove");
 			});			
 		});
 	}
@@ -220,23 +221,22 @@ var socket = io();											//Socket.io, baby
 		var count = 0;
 
 		for (i = 0; i < 5; i++){
-			$(".row-template").clone().appendTo(".page-wrapper").removeClass("hide row-template").addClass("new-row");
+			$(".row-template").clone().removeClass("hide row-template").addClass("new-row").appendTo(".page-wrapper");
 
 			for (j = 0; j < 5; j++){
 				if (j === 0){
-					$(".column-template").clone().appendTo(".new-row:eq("+i+")").removeClass("hide column-template").addClass("new-column");
+					$(".column-template").clone().removeClass("hide column-template").addClass("new-column").appendTo(".new-row:eq("+i+")");
 				} else {
-					$(".column-template").clone().appendTo(".new-row:eq("+i+")").removeClass("hide offset-s1 column-template").addClass("new-column");
+					$(".column-template").clone().removeClass("hide offset-s1 column-template").addClass("new-column").appendTo(".new-row:eq("+i+")");
 				}
 			}
 
 			for (k = 0; k < 5; k++){
 				if ($(".new-card").length < weekdaysInMonth) {
 					if (getDayOfWeek(1) <= count+1){
-						$(".card-template").clone().appendTo(".new-column:eq("+count+")").removeClass("hide card-template").addClass("new-card animated");
+						$(".card-template").clone().removeClass("hide card-template").addClass("new-card animated").appendTo(".new-column:eq("+count+")");
 					} else if (getDayOfWeek(1) === 0 || getDayOfWeek(1) === 6){
-						$(".card-template").clone().appendTo(".new-column:eq("+count+")").removeClass("hide card-template").addClass("new-card animated");
-
+						$(".card-template").clone().removeClass("hide card-template").addClass("new-card animated").appendTo(".new-column:eq("+count+")");
 					}
 				}
 				count++;
@@ -305,7 +305,6 @@ var socket = io();											//Socket.io, baby
 		if(g_Month(g_Switch) !== 11){
 			g_Switch++;
 			g_Month(g_Switch);
-			$(".new-card").addClass("fadeOutLeft");
 			$(".new-row").remove();
 			getDaysInMonth();
 			getWeekDaysInMonth();
@@ -322,7 +321,6 @@ var socket = io();											//Socket.io, baby
 	function goToCurrentMonth(){
 		g_Switch = 0;
 		g_Month(g_Switch);
-		$(".new-card").addClass("fadeOutRight");
 		$(".new-row").remove();
 		getDaysInMonth();
 		getWeekDaysInMonth();
