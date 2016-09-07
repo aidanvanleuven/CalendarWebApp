@@ -20,7 +20,7 @@ app.post('/addentry', function(req, res){
     res.json({success: true});
 });
 
-//Get enries from db
+//Get entries from db
 app.post('/getentries', function(req, res){
 	var foundEntries = db.entries.find({month : req.body.month});
 	res.json(foundEntries);

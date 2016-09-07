@@ -23,10 +23,10 @@
 						<a><i class=" small material-icons">settings</i></a>
 					</li> -->
 					<li>
-						<a onclick="previousClick();">Previous Month</a>
+						<a class="waves-effect" onclick="previousClick();">Previous Month</a>
 					</li>
 					<li>
-						<a onclick="nextClick();">Next Month</a>
+						<a class="waves-effect" onclick="nextClick();">Next Month</a>
 					</li>
 				</ul>
 
@@ -34,7 +34,7 @@
 
 				<ul class="right">
 					<li>
-						<a onclick="newEntryClick();">New Entry</a>
+						<a class="waves-effect" onclick="newEntryClick();">New Entry</a>
 					</li>
 				</ul>
 			</div>
@@ -91,47 +91,47 @@
 			</div>
 
 			<div class="input-field">
-				<input id="label-textarea" type="text" maxlength="32"></input>
-				<label for="label-textarea">Enter label here (maximum 32 characters):</label>
+				<input id="label-textarea" type="text" maxlength="36" length="36"></input>
+				<label for="label-textarea">Enter label here (maximum 36 characters):</label>
 			</div>
 
 			<form id="color-radios">
-				<p>Status:</p>
+				<p>Job Status:</p>
 				<p>
 					<input type="radio" name="color" id="red" />
-					<label for="red" class="red-text">Red</label>
+					<label for="red" class="red-text">Bid Job</label>
 				</p>
 				<p>
 					<input type="radio" name="color" id="purple" />
-					<label for="purple" class="purple-text">Purple</label>
+					<label for="purple" class="purple-text">In Queue</label>
 				</p>
 				<p>
 					<input type="radio" name="color" id="indigo" />
-					<label for="indigo" class="indigo-text">Indigo</label>
+					<label for="indigo" class="indigo-text">Working (Modeling/Clean-up)</label>
 				</p>
 				<p>
 					<input type="radio" name="color" id="blue" />
-					<label for="blue" class="light-blue-text">Blue</label>
+					<label for="blue" class="light-blue-text">Send Approval Drawings</label>
 				</p>
 				<p>
 					<input type="radio" name="color" id="teal" />
-					<label for="teal" class="teal-text">Teal</label>
+					<label for="teal" class="teal-text">Received from Approval</label>
 				</p>
 				<p>
 					<input type="radio" name="color" id="green" />
-					<label for="green" class="green-text">Green</label>
+					<label for="green" class="green-text">Working Approvals</label>
 				</p>
 				<p>
 					<input type="radio" name="color" id="yellow" />
-					<label for="yellow" class="yellow-text">Yellow</label>
+					<label for="yellow" class="yellow-text">Resubmit Approval Drawings</label>
 				</p>
 				<p>
 					<input type="radio" name="color" id="orange" />
-					<label for="orange" class="orange-text">Orange</label>
+					<label for="orange" class="orange-text">Prepare for Fabrication</label>
 				</p>
 				<p>
 					<input type="radio" name="color" id="grey" />
-					<label for="grey" class="grey-text">Gray</label>
+					<label for="grey" class="grey-text">Out for Fabrication</label>
 				</p>
 			</form>
 		</div>
