@@ -16,9 +16,9 @@ Installation instructions:
 
 3. On windows, run RunServer.bat, on Mac/Linux, run "node server.js" from the app folder
 
-4. In a browser, go to either localhost or your LAN IP address
+4. Use Chrome to open the IP generated in the terminal (ex. 192.168.0.49:3000)
 
-5. Connect more computers/displays/etc. by typing in the local IP address of the computer running it, and add ":3000" to the end, ex. 192.168.0.49:3000
+5. Connect more computers/displays/etc. by typing in the same IP as Step 4 into other devices
 
 v1.0 release!
 
