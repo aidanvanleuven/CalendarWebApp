@@ -54,6 +54,16 @@ var socket = io();											//Socket.io, baby
 				$('#modal1').closeModal();
 			}
 		});
+		$('body').keydown(function(e) {
+			if(e.keyCode == 37){
+				e.preventDefault();
+				previousClick();
+			}
+			if (e.keyCode == 39){
+				e.preventDefault();
+				nextClick();
+			}
+		});
 	}
 
 	//Show current users month as the header
@@ -240,6 +250,7 @@ var socket = io();											//Socket.io, baby
 	//Add badges to the cards... probably not best practice
 	function addEntriesToCards(){
 		$(".entry-space").empty();
+		$('.material-tooltip').remove();
 		$(".card-content").each(function(index){
 			for (i = 0; i < entries.length; i++){
 				if ($(this).attr("id") == entries[i].day){
@@ -271,7 +282,6 @@ var socket = io();											//Socket.io, baby
 				} else {
 					Materialize.toast('There was an error', 4000);
 				}
-				$('.tooltipped').tooltip("remove");
 			});			
 		});
 	}
