@@ -20,10 +20,6 @@ Installation instructions:
 
 5. Connect more computers/displays/etc. by typing in the same IP as Step 4 into other devices
 
-Screenshot:
-
-![Screenshot](https://dl.dropboxusercontent.com/s/0xk8m2yl1l6l5vg/calendardemo.png?dl=0 "Demo screenshot")
-
 v1.0 release!
 
 More than likely still chock full of bugs and missing functionality ¯\\\_(ツ)\_/¯
