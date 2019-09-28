@@ -8,7 +8,7 @@ Stream it to a 1080p display through a Chromecast or a Raspberry Pi!
 
 Currently only runs offline on your local area network.
 
-Demo on my personal [site.](calendar.aidanvanleuven.com)
+Demo on my personal [site.](https://calendar.aidanvanleuven.com)
 
 Installation instructions:
 
