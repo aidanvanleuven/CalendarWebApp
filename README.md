@@ -1,12 +1,14 @@
 # CalendarWebApp
 
-Calendar web app the excludes weekends; Built specifically for J&B Drafting.
+Calendar web app the excludes weekends; Built specifically for J & B Drafting.
 
 Ideally viewed and edited in Chrome, using a 1080p display. Anything else is not guaranteed to display or function as intended.
 
 Stream it to a 1080p display through a Chromecast or a Raspberry Pi!
 
 Currently only runs offline on your local area network.
+
+Demo on my personal [site.](calendar.aidanvanleuven.com)
 
 Installation instructions:
 
@@ -16,13 +18,9 @@ Installation instructions:
 
 3. On windows, run RunServer.bat, on Mac/Linux, run "node server.js" from the app folder
 
-4. Use Chrome to open the IP generated in the terminal (ex. 192.168.0.49:3000)
+4. Use Chrome to open the IP generated in the terminal (ex. 192.168.0.99:3000)
 
 5. Connect more computers/displays/etc. by typing in the same IP as Step 4 into other devices
-
-Screenshot:
-
-![screenshot](https://s10.postimg.org/wnms93cpl/calendardemo.png "Demo screenshot")
 
 v1.0 release!
 
